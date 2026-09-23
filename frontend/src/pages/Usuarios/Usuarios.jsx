@@ -3,6 +3,7 @@ import { getUsuarios, getUsuario, updateUsuario, deleteUsuario } from '../../ser
 
 function Usuarios() {
     const [users, setUsers] = useState([]);
+    const [form, setForm] = useState({ nome: '', email: '', senha: '' });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [idBusca, setIdBusca] = useState('');
@@ -27,7 +28,7 @@ function Usuarios() {
         fetchUsuarios();
     }, []);
 
-        const handleDelete = async (id) => {
+    const handleDelete = async (id) => {
         const confirmar = window.confirm('Tem certeza que deseja excluir este usuário?');
         if (!confirmar) {
             return;
@@ -36,17 +37,17 @@ function Usuarios() {
             await deleteUsuario(id);
 
             setUsers((usuarios) =>
-            usuarios.filter((usuario) => usuario.id !== id)
+                usuarios.filter((usuario) => usuario.id !== id)
             );
 
             alert('Usuário excluído com sucesso!');
-        }catch (error) {
-        alert('Erro ao excluir usuário');
+        } catch (error) {
+            alert('Erro ao excluir usuário');
         }
-        };
+    };
 
-        const handleEdit = async (user) => {
-        const novoNome = window.prompt( 'Digite o novo nome:', user.nome );
+    const handleEdit = async (user) => {
+        const novoNome = window.prompt('Digite o novo nome:', user.nome);
 
         if (!novoNome) {
             return;
@@ -59,33 +60,48 @@ function Usuarios() {
                 email: user.email,
                 senha: user.senha,
                 foto: user.foto
-                }
+            }
             );
 
-                setUsers((usuarios) =>
-                    usuarios.map((usuario) =>
+            setUsers((usuarios) =>
+                usuarios.map((usuario) =>
                     usuario.id === user.id
-                    ? usuarioAtualizado
-                    : usuario
-            )
-        );
+                        ? usuarioAtualizado
+                        : usuario
+                )
+            );
 
             alert('Usuário atualizado com sucesso!');
-            }catch (error) {
-                alert('Erro ao atualizar usuário');
+        } catch (error) {
+            alert('Erro ao atualizar usuário');
         }
-        };
-        const handleBuscarPorId = async () => {
-            if (!idBusca) {
-                return;
-            }
-            try {
-                const usuario = await getUsuario(idBusca);
-                setUsers([usuario]);
-            }catch (error) {
-                setError( error.response?.data?.error || 'Usuário não encontrado' );
-            }
-        };
+    };
+    const handleBuscarPorId = async () => {
+        if (!idBusca) {
+            return;
+        }
+        try {
+            const usuario = await getUsuario(idBusca);
+            setUsers([usuario]);
+        } catch (error) {
+            setError(error.response?.data?.error || 'Usuário não encontrado');
+        }
+    };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+    };
+    const handleSalvar = async (e) => {
+        e.preventDefault();
+
+        try {
+            await addUsuario(form);
+            setForm({ nome: '', email: '', senha: '' });
+            await fetchUsuarios();
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     return (
         <div className="page-container">
@@ -111,6 +127,47 @@ function Usuarios() {
                 >
                     Mostrar todos
                 </button>
+            </div>
+
+            <div className="modal-overlay">
+                <h2>Cadastrar Usuário</h2>
+
+                <form onSubmit={handleSalvar}>
+                    <label>
+                        Nome:
+                        <input
+                            type="text"
+                            name="nome"
+                            value={form.nome}
+                            onChange={handleChange}
+                            autoFocus
+                        />
+                    </label>
+
+                    <label>
+                        Email:
+                        <input
+                            type="email"
+                            name="email"
+                            value={form.email}
+                            onChange={handleChange}
+                        />
+                    </label>
+
+                    <label>
+                        Senha:
+                        <input
+                            type="password"
+                            name="senha"
+                            value={form.senha}
+                            onChange={handleChange}
+                        />
+                    </label>
+
+                    <div className="modal-actions">
+                        <button type="submit">Salvar</button>
+                    </div>
+                </form>
             </div>
 
             {loading && (
@@ -208,7 +265,7 @@ const styles = {
     },
 
     userCard: {
-        background:'var(--card-bg)',
+        background: 'var(--card-bg)',
         border: '1px solid var(--border-color)',
         padding: '1rem 1.5rem',
         borderRadius: '12px',

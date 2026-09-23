@@ -6,12 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json()); 
 
-// rota raiz
+
 app.get('/api/mensagem', (req, res) => {
     res.json({texto: "Olá do Servidor!"});
 });
 
-// rota para buscar o CEP usando a API viaCEP com resposta em JSON
+
 
 app.get('/cep/:cep', async (req, res) => {
     const { cep } = req.params;
@@ -31,7 +31,7 @@ app.get('/cep/:cep', async (req, res) => {
     }
 });
 
-// rota para buscar o CEP usando a API viaCEP com resposta em XML
+
 app.get('/cep/xml/:cep', async (req, res) => {
     const { cep } = req.params;
     try {
@@ -44,11 +44,11 @@ app.get('/cep/xml/:cep', async (req, res) => {
     }   
 });
 
-// rota para buscar o CEP usando a API viaCEP com envio de parametros na URL
+
 app.get('/endereco/:uf/:cidade/:logradouro/:formato', async (req, res) => {
     const { uf, cidade, logradouro, formato } = req.params;
 
-    // formato válido
+  
     if (formato !== 'json' && formato !== 'xml') {
         return res.status(400).json({
             erro: "O formato deve ser json ou xml"
@@ -62,7 +62,7 @@ app.get('/endereco/:uf/:cidade/:logradouro/:formato', async (req, res) => {
     }
 
     try {
-        // Codifica os parâmetros para que espaços e acentos funcionem corretamente
+        
         const cidadeCodificada = encodeURIComponent(cidade);
         const logradouroCodificado = encodeURIComponent(logradouro);
 
@@ -75,13 +75,13 @@ app.get('/endereco/:uf/:cidade/:logradouro/:formato', async (req, res) => {
             });
         }
 
-        // Retorno em JSON
+      
         if (formato === 'json') {
             const dados = await resposta.json();
             return res.json(dados);
         }
 
-        // Retorno em XML
+        
         const dados = await resposta.text();
 
         res.set('Content-Type', 'application/xml');

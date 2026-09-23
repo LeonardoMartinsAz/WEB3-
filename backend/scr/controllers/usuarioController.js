@@ -4,7 +4,7 @@ const usuarioService = require('../services/usuarioService');
 const buscarUsuario = async (req, res) => {
     try {
         const Usuario = await usuarioService.obterTodosUsuario();
-        res.status(200).json({Usuario});
+        res.status(200).json({ Usuario });
     } catch (error) {
         res.status(500).json({ error: 'Erro ao buscar usuários' });
     }
@@ -58,10 +58,23 @@ const excluirUsuario = async (req, res) => {
     }
 };
 
+const criarUsuario = async (req, res) => {
+    try {
+        const { nome, email, senha } = req.body;
+
+        if (!nome || !email || !senha) return res.status(400).json({ err: 'Dados inválidos' });
+
+        const usuario = await usuarioService.criarUsuario(nome, email, senha);
+        res.status(201).json(usuario);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ err: 'Erro interno ao criar usuario' });
+    }
+};
+
 module.exports = {
     buscarUsuario,
     buscarUsuarioPorId,
     editarUsuario,
     excluirUsuario
 };
-    
