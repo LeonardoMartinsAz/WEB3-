@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getUsuarios, getUsuario, updateUsuario, deleteUsuario } from '../../services/usuarioServices';
+import { getUsuarios, getUsuario, updateUsuario, deleteUsuario, createUsuario } from '../../services/usuarioServices';
 
 function Usuarios() {
     const [users, setUsers] = useState([]);
@@ -95,7 +95,7 @@ function Usuarios() {
         e.preventDefault();
 
         try {
-            await addUsuario(form);
+            await createUsuario(form);
             setForm({ nome: '', email: '', senha: '' });
             await fetchUsuarios();
         } catch (err) {

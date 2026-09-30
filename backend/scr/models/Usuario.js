@@ -26,11 +26,21 @@ Usuario.init({
         type: DataTypes.TEXT('long'),
         allowNull: true,
     },
-}, {
+}, 
+{
     sequelize,
     modelName: 'Usuario',
     tableName: 'Usuario',
     timestamps: true,
+    defaultScope: {
+      attributes: { exclude: ['senha'] },
+    },
+    scopes: {
+        comSenha: {
+          attributes: { include: ['senha'] }
+        },
+    },
+
 });
 
 module.exports = Usuario;

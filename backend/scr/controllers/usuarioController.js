@@ -1,4 +1,5 @@
 const usuarioService = require('../services/usuarioService');
+const bcrypt = require('bcrypt');
 
 
 const buscarUsuario = async (req, res) => {
@@ -60,15 +61,31 @@ const excluirUsuario = async (req, res) => {
 
 const criarUsuario = async (req, res) => {
     try {
-        const { nome, email, senha } = req.body;
+        const { nome, email, senha, foto } = req.body;
 
-        if (!nome || !email || !senha) return res.status(400).json({ err: 'Dados inválidos' });
+        if (!nome || !email || !senha) {
+            return res.status(400).json({
+                error: 'Dados inválidos'
+            });
+        }
 
-        const usuario = await usuarioService.criarUsuario(nome, email, senha);
+        const hash = await bcrypt.hash(senha, 10);
+
+        const usuario = await usuarioService.criarUsuario({
+            nome,
+            email,
+            senha: hash,
+            foto
+        });
+
         res.status(201).json(usuario);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ err: 'Erro interno ao criar usuario' });
+
+    } catch (error) {
+        console.error("Erro ao criar usuário: ", error);
+
+        res.status(500).json({
+            error: 'Erro ao criar usuário'
+        });
     }
 };
 
@@ -76,5 +93,6 @@ module.exports = {
     buscarUsuario,
     buscarUsuarioPorId,
     editarUsuario,
-    excluirUsuario
+    excluirUsuario,
+    criarUsuario
 };
