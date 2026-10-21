@@ -1,22 +1,35 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, Settings, LogOut, Sun, Moon, Activity } from 'lucide-react';
 import Home from './pages/Home/Home';
 import Usuarios from './pages/Usuarios/Usuarios';
+import Login from './pages/Login/Login';
+import RotaPrivada from './components/RotaPrivada';
+import { useAuth } from './contexts/AuthContext';
 
-function App() {
-  const [theme, setTheme] = useState('light');
+function Layout() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }, [theme]);
+
+  const { usuario, sair } = useAuth();
+  const navigate = useNavigate();
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
+  const handleSair = (e) => {
+    e.preventDefault();
+    sair();
+    navigate('/login', { replace: true });
+  };
+
   return (
-    <BrowserRouter>
+    <>
       <div className="app-layout">
         <aside className="sidebar">
           <div className="sidebar-header">
@@ -33,14 +46,14 @@ function App() {
             <Users size={20} />
             Usuários
           </Link>
-          <a href="/configuracoes" className="sidebar-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Link to="/configuracoes" className="sidebar-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Settings size={20} />
             Configurações
-          </a>
-          <a href="/sair" className="sidebar-link" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 'auto', marginBottom: '1rem' }}>
+          </Link>
+          <Link to="/login" onClick={handleSair} className="sidebar-link" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 'auto', marginBottom: '1rem' }}>
             <LogOut size={20} />
             Sair
-          </a>
+          </Link>
         </aside>
 
         <div className="right-area">
@@ -57,19 +70,35 @@ function App() {
                   <><Sun size={18} /></>
                 )}
               </button>
-              <div className="user-profile">Administrador</div>
+              <Header />
             </div>
           </nav>
 
           <main className="page-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/usuarios" element={<Usuarios />} />
-            </Routes>
+            <Outlet />
           </main>
         </div>
       </div>
-    </BrowserRouter>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        element={
+          <RotaPrivada>
+            <Layout />
+          </RotaPrivada>
+        }
+      >
+        <Route path="/" element={<Home />} />
+        <Route path="/usuarios" element={<Usuarios />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
