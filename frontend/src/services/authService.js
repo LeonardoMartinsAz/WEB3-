@@ -5,6 +5,11 @@ export const login = async (email, senha) => {
   return response.data.data;
 };
 
+export const loginGoogle = async (credential) => {
+  const response = await api.post('/auth/google', { credential });
+  return response.data;
+};
+
 export const salvarSessao = (token, usuario) => {
   localStorage.setItem('token', token);
   localStorage.setItem('usuario', JSON.stringify(usuario));

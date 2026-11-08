@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../contexts/AuthContext';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const { entrar, carregando, erro } = useAuth();
+  const { entrar, entrarComGoogle, carregando, erro } = useAuth();
   const navigate = useNavigate();
+
+  const handleGoogle = async (resposta) => {
+    // resposta.credential é o id_token assinado pelo Google
+    const deuCerto = await entrarComGoogle(resposta.credential);
+    if (deuCerto) navigate('/usuarios');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,6 +25,7 @@ function Login() {
   };
 
   return (
+    <div>
     <form onSubmit={handleSubmit}>
       <h1>Entrar</h1>
 
@@ -35,6 +43,14 @@ function Login() {
         {carregando ? 'Entrando...' : 'Entrar'}
       </button>
     </form>
+
+    <p>ou</p>
+
+      <GoogleLogin
+        onSuccess={handleGoogle}
+        onError={() => console.log('Login com Google falhou')}
+      />
+    </div>
   );
 }
 
