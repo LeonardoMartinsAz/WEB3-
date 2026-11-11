@@ -12,6 +12,7 @@ const login = async (req, res) => {
     return res.status(200).json({ data: usuario });
 
   } catch (error) {
+    console.error("ERRO REAL NO LOGIN:", error);
     if (error.message === 'CREDENCIAIS_INVALIDAS') {
       return res.status(401).json({ error: 'Email ou senha inválidos' });
     }
