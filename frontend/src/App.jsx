@@ -5,6 +5,7 @@ import Home from './pages/Home/Home';
 import Usuarios from './pages/Usuarios/Usuarios';
 import Login from './pages/Login/Login';
 import RotaPrivada from './components/RotaPrivada';
+import Header from './components/Header';
 import { useAuth } from './contexts/AuthContext';
 
 function Layout() {
@@ -87,6 +88,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+
       <Route
         element={
           <RotaPrivada>

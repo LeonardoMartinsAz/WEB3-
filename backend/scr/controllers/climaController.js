@@ -2,7 +2,9 @@ const climaService = require('../services/climaService');
 
 const obterClima = async (req, res) => {
   try {
-    const usuario_id = req.usuario.id;
+    // Se a rota estiver protegida usa o ID do token, senão usa um ID fixo (ex: 1) para testes
+    const usuario_id = req.usuario ? req.usuario.id : 1;
+    
     const clima = await climaService.buscarESalvarClima(usuario_id);
     
     res.status(200).json(clima);

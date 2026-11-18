@@ -25,5 +25,13 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
+export const buscarClima = async () => {
+  try {
+    const resposta = await api.get('/clima'); // O interceptor já injeta o Token JWT automaticamente
+    return resposta.data;
+  } catch (error) {
+    console.error('Erro ao buscar clima:', error);
+    throw error;
+  }
+};
 export default api;

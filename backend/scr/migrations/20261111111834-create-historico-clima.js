@@ -20,7 +20,7 @@ module.exports = {
       usuario_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: 'usuarios', key: 'id' }, // Cria a relação com o usuário
+        references: { model: 'Usuario', key: 'id' }, // Cria a relação com o usuário
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
